@@ -16,14 +16,31 @@ This is a work-in-progress Grafana dashboard for monitoring Aptos Validators. Se
 - This dashboard assumes you have a `chain` tag that is used in the prometheus metrics capture. I use this to flip between testnet/mainnet monitoring. This dashboard assumes you have this `chain` label set and will not show data without it. Setup your `prometheus.yml` file like this:
 
 ```yaml
-  - job_name: aptos
-      static_configs:
-      - targets: ['val.llt.ip.addy.here:9100','val.llt.ip.addy.here:9101','valFullNode.llt.ip.addy.here:9100','valFullNode.llt.ip.addy.here:9101']
-          labels:
-          chain: 'llt'
-      - targets: ['val.mainnet.ip.addy.here:9100','val.mainnet.ip.addy.here:9101','valFullNode.mainnet.ip.addy.here:9100','valFullNode.mainnet.ip.addy.here:9101']
-          labels:
+global:
+  scrape_interval:     120s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 120s # By default, scrape targets every 15 seconds.
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: 'aptos-node-monitor'
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  - job_name: 'aptos'
+    scrape_interval: 120s
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ['validator:9101','node-exporter:9100']
+        labels:
           chain: 'mainnet'
+          instance: 'validator'
+      - targets: ['VFN.SERVER.IP:9101','VFN.SERVER.IP:9100']
+        labels:
+          chain: 'mainnet'
+          instance: 'VFN'    
 
 # 9100 is prometheus-node-exporter, 9101 is the default APTOS metrics port.  Ensure these are available from the prometheus server
 # Add both your Validator and Validator Full Node IP addresses.  No need for additional tags.
