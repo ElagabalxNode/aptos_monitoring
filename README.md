@@ -1,10 +1,9 @@
 # Grafana Dashboard for Monitoring APTOS Validator Operations
 
-This is a work-in-progress Grafana dashboard for monitoring Aptos Validators. Setting up Prometheus/Grafana is outside the scope of this repo. Use the [excellent guide from Artifact Staking](https://artifact-staking.medium.com/setting-up-validator-monitoring-for-aptos-testnet-2-85d5c4e94c80).
+This is a work-in-progress Grafana dashboard for monitoring Aptos Validators. Setting up Prometheus/Grafana is outside the scope of this repo.
 
-**New!** This Dashboard is also available on the [Grafana Dashboard page for one-click install](https://grafana.com/grafana/dashboards/16846-aptos-validator-monitoring/).
-
-![aptos monitoring dashboard](https://grabup.teamhim.com/palaeogaea-calycozoic-liquidatorship-crosshatcher.png?raw=true)
+This repository is a fusion of two ideas!
+Grafana dashboard from the RhinoStake team and a modified docker-compose file of jiangydev.
 
 ## A few assumptions and instructions for setup:
 
@@ -68,6 +67,4 @@ scrape_configs:
 
 Have ideas/changes/additions? Great! Feel free to push a PR to this repo or reach out to [me on Discord](https://discord.gg/SGhQzj5tyz)!
 
-## Who is RHINO?
-
-RHINO is a professionally managed, highly available validator service. Earn rewards and help secure networks by staking your tokens with RHINO. We operate across the Aptos, Cosmos, Chainlink, and Helium ecosystems. Read more at [https://rhinostake.com](https://rhinostake.com).
+![aptos monitoring dashboard](https://grabup.teamhim.com/palaeogaea-calycozoic-liquidatorship-crosshatcher.png?raw=true)
