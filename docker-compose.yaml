@@ -1,0 +1,116 @@
+# This compose file defines an Aptos Validator deployment.
+# Read the README.md files for instruction on how to install aptos-node
+
+version: "3.8"
+services:
+  haproxy:
+    image: haproxytech/haproxy-debian:2.2
+    volumes:
+      - type: bind
+        source: ./haproxy.cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+      - type: bind
+        source: ./blocked.ips
+        target: /usr/local/etc/haproxy/blocked.ips
+    networks:
+      - shared
+    expose:
+      - 6180
+      - 6181
+      - 9101
+      - 9102
+      - 80
+    ports:
+      - "6180:6180"
+      - "6181:6181"
+      - "127.0.0.1:80:8180"
+      - "127.0.0.1:9101:9101"
+      - "127.0.0.1:9102:9102"
+
+  monitor:
+    image: prom/prometheus
+    volumes:
+      - type: volume
+        source: prom_db
+        target: /prometheus
+      - type: bind
+        source: ./prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+      - type: bind
+        source: ./prom-web-config.yml
+        target: /etc/prometheus/web.yml
+    networks:
+      - shared
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml" 
+      - "--web.config.file=/etc/prometheus/web.yml"
+    restart: unless-stopped
+    expose:
+      - 9090
+    ports:
+      - "9090:9090"
+
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      - shared
+    restart: unless-stopped
+    expose:
+      - 9100
+    ports:
+      - "127.0.0.1:9100:9100"      
+
+  cadvisor:
+    image: google/cadvisor
+    restart: unless-stopped
+    networks:
+      - shared
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    command:
+      - '-port=8098'
+    expose:
+      - 8098
+
+  validator:
+    image: "${VALIDATOR_IMAGE_REPO:-aptoslabs/validator}:${IMAGE_TAG:-mainnet_86b29874ff68bece908494a8c54ea35ac2cb0c43}"
+    networks:
+      shared:
+    volumes:
+      - type: volume
+        source: aptos-validator
+        target: /opt/aptos/data
+      - type: bind
+        source: ./validator.yaml
+        target: /opt/aptos/etc/validator.yaml
+      - type: bind
+        source: ./genesis.blob
+        target: /opt/aptos/genesis/genesis.blob
+      - type: bind
+        source: ./waypoint.txt
+        target: /opt/aptos/genesis/waypoint.txt
+      - type: bind
+        source: ./keys/validator-identity.yaml
+        target: /opt/aptos/genesis/validator-identity.yaml
+    command: ["/usr/local/bin/aptos-node", "-f", "/opt/aptos/etc/validator.yaml"]
+    restart: unless-stopped
+    expose:
+      - 6180
+      - 6181
+      - 9101
+      - 80
+
+networks:
+  shared:
+    name: "aptos-docker-compose-shared"
+    ipam:
+      config:
+        - subnet: 172.16.1.0/24
+
+volumes:
+  aptos-validator:
+    name: aptos-validator
+  prom_db:
