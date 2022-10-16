@@ -1,0 +1,5 @@
+basic_auth_users:
+  # Set the user name and password for accessing the prometheus interface, you can set multiple.
+  # This password needs to be encrypted. Online encryption tool: https://bcrypt-generator.com
+  # The following is the result of encrypting aptos.
+  admin: $2a$12$BXQvYZ/yCmOf9K17JRD9ruMGTJVQpyFVGlQYJ45unYDtbagrmGJIe
