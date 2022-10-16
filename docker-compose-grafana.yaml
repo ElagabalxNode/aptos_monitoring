@@ -1,0 +1,38 @@
+# To start the services, run `docker-compose up -d`
+version: "3.8"
+services:
+  grafana:
+    image: grafana/grafana:main
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: grafana_db
+        target: /prometheus
+    environment:
+      # init admin account's password
+      - GF_SECURITY_ADMIN_PASSWORD=MYPASSWORD
+      - GF_USERS_ALLOW_SIGN_UP=false
+      # - GF_SERVER_DOMAIN=myrul.com
+      # install some plugins
+      - GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource
+      # SMTP Config
+      # - GF_SMTP_ENABLED=true
+      # - GF_SMTP_HOST=smtp.gmail.com:587
+      # - GF_SMTP_USER=myadrress@gmail.com
+      # - GF_SMTP_PASSWORD=mypassword
+      # - GF_SMTP_FROM_ADDRESS=myaddress@gmail.com
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+
+volumes:
+  grafana_db:
+
+# Uncomment this if you're using the monitoring compose with custom networks
+# This will allow containers to join a pre-existing network
+#
+# networks:
+#   default:
+#     external: true
+#     name: "aptos-docker-compose-shared"
